@@ -1,0 +1,150 @@
+// Esquema DBML para dbdiagram.io
+// Proyecto: Servicio - Gestión Digital
+
+Enum sexo {
+  M
+  F
+  X
+}
+
+Enum estado_civil {
+  SOLTERO
+  CASADO
+  DIVORCIADO
+  VIUDO
+  UNION_ESTABLE
+}
+
+Enum tipo_parto {
+  NATURAL
+  CESAREA
+}
+
+Enum rol_familiar {
+  PADRE
+  MADRE
+}
+
+Table alumnos {
+  alumno_id integer [pk, increment]
+  full_name text [not null]
+  fecha_nacimiento date
+  lugar_nacimiento text
+  sexo sexo
+  nacionalidad text
+  direccion text
+  creado_en timestamp
+  actualizado_en timestamp
+
+  Indexes {
+    (full_name) [name: "idx_alumnos_full_name"]
+  }
+}
+
+Table inscripciones {
+  inscripcion_id integer [pk, increment]
+  alumno_id integer [not null, ref: > alumnos.alumno_id]
+  grado varchar
+  seccion varchar
+  fecha_ingreso date
+  anio_escolar varchar
+  activo boolean
+
+  Indexes {
+    (alumno_id, activo)
+  }
+}
+
+Table alumno_medico {
+  alumno_medico_id integer [pk, increment]
+  alumno_id integer [not null, unique, ref: > alumnos.alumno_id]
+  problemas_audicion varchar
+  problemas_lenguaje varchar
+  grupo_sanguineo varchar
+  alimentacion text
+}
+
+Table alergias {
+  alergia_id integer [pk, increment]
+  nombre text [unique, not null]
+}
+
+Table alumno_alergia {
+  alumno_id integer [not null, ref: > alumnos.alumno_id]
+  alergia_id integer [not null, ref: > alergias.alergia_id]
+
+  indexes {
+    (alumno_id, alergia_id) [pk]
+  }
+}
+
+Table enfermedades {
+  enfermedad_id integer [pk, increment]
+  nombre text [unique, not null]
+}
+
+Table alumno_enfermedad {
+  alumno_id integer [not null, ref: > alumnos.alumno_id]
+  enfermedad_id integer [not null, ref: > enfermedades.enfermedad_id]
+
+  indexes {
+    (alumno_id, enfermedad_id) [pk]
+  }
+}
+
+Table medicamentos {
+  medicamento_id integer [pk, increment]
+  nombre text [unique, not null]
+}
+
+Table alumno_medicamento_autorizado {
+  alumno_id integer [not null, ref: > alumnos.alumno_id]
+  medicamento_id integer [not null, ref: > medicamentos.medicamento_id]
+
+  indexes {
+    (alumno_id, medicamento_id) [pk]
+  }
+}
+
+Table familiares {
+  padres_id integer [pk, increment]
+  alumno_id integer [not null, ref: > alumnos.alumno_id]
+  rol rol_familiar [not null]
+  full_name text [not null]
+  vive_con_alumno boolean
+  fecha_nacimiento date
+  lugar_nacimiento text
+  cedula varchar
+  estado_civil estado_civil
+  informacion_laboral text
+  telefono_contacto varchar
+
+  Indexes {
+    (alumno_id, rol)
+  }
+}
+
+Table datos_embarazo {
+  embarazo_id integer [pk, increment]
+  alumno_id integer [not null, unique, ref: > alumnos.alumno_id]
+  complicaciones text
+  tipo_parto tipo_parto
+  fumo boolean
+  bebio boolean
+  peso_al_nacer_kg numeric(5,2)
+  demas_informacion text
+}
+
+Table representantes_autorizados {
+  representante_id integer [pk, increment]
+  alumno_id integer [not null, ref: > alumnos.alumno_id]
+  full_name text [not null]
+  edad integer
+  cedula varchar
+  parentesco varchar
+  telefono_contacto varchar
+
+  Indexes {
+    (alumno_id)
+  }
+}
